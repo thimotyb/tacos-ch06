@@ -1,0 +1,176 @@
+:root {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #1f2933;
+  background-color: #f7fafc;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.info {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.grid-layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 960px) {
+  .grid-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-layout > section:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  padding: 1.5rem;
+}
+
+section header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.panel {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.panel label,
+.panel fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+input,
+select,
+button {
+  font: inherit;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+}
+
+button {
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+  border: none;
+  transition: background 120ms ease-in-out;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: #f1f5f9;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+}
+
+.list small {
+  color: #475569;
+  font-size: 0.85rem;
+}
+
+.ingredient-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.order-form .grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 720px) {
+  .order-form .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.taco-selector {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.selected-tacos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.25rem 0.5rem;
+  background: #c7d2fe;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+}
+
+.orders li {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.orders ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
