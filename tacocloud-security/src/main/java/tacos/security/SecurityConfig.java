@@ -1,62 +1,40 @@
 package tacos.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation
-             .authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web
-             .builders.HttpSecurity;
-import org.springframework.security.config.annotation.web
-                        .configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web
-                        .configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-@SuppressWarnings("deprecation")
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-  
-  @Autowired
-  private UserDetailsService userDetailsService;
-  
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http
-      .authorizeRequests()
-        .antMatchers(HttpMethod.OPTIONS).permitAll() // needed for Angular/CORS
-        .antMatchers("/design", "/orders/**")
-            .permitAll()
-            //.access("hasRole('ROLE_USER')")
-        .antMatchers(HttpMethod.PATCH, "/ingredients").permitAll()
-        .antMatchers("/**").access("permitAll")
-        
-      .and()
-        .formLogin()
-          .loginPage("/login")
-          
-      .and()
-        .httpBasic()
-          .realmName("Taco Cloud")
-          
-      .and()
-        .logout()
-          .logoutSuccessUrl("/")
-          
-      .and()
-        .csrf()
-          .ignoringAntMatchers("/h2-console/**", "/ingredients/**", "/design", "/orders/**")
+public class SecurityConfig {
 
-      // Allow pages to be loaded in frames from the same origin; needed for H2-Console
-      .and()  
-        .headers()
-          .frameOptions()
-            .sameOrigin()
-      ;
+  @Bean
+  SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(HttpMethod.OPTIONS).permitAll()
+            .requestMatchers("/design", "/orders/**").permitAll()
+            .requestMatchers(HttpMethod.PATCH, "/ingredients").permitAll()
+            .anyRequest().permitAll())
+        .formLogin(form -> form.loginPage("/login"))
+        .httpBasic(basic -> basic.realmName("Taco Cloud"))
+        .logout(logout -> logout.logoutSuccessUrl("/"))
+        .csrf(csrf -> csrf.ignoringRequestMatchers(
+            new AntPathRequestMatcher("/h2-console/**"),
+            new AntPathRequestMatcher("/ingredients/**"),
+            new AntPathRequestMatcher("/design"),
+            new AntPathRequestMatcher("/orders/**")))
+        .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+    return http.build();
   }
 
   @Bean
@@ -64,16 +42,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    return new StandardPasswordEncoder("53cr3t");
     return NoOpPasswordEncoder.getInstance();
   }
-  
-  
-  @Override
-  protected void configure(AuthenticationManagerBuilder auth)
-      throws Exception {
 
-    auth
-      .userDetailsService(userDetailsService)
-      .passwordEncoder(encoder());
-    
+  @Bean
+  public AuthenticationManager authenticationManager(HttpSecurity http,
+      PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) throws Exception {
+    AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+    builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+    return builder.build();
   }
 
 }
