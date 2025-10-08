@@ -1,17 +1,16 @@
 package tacos;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.time.Duration;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -19,12 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@Ignore("Ignore for now...deal with security implications in tests.")
+@Disabled("Ignore for now...deal with security implications in tests.")
 public class DesignAndOrderTacosBrowserTest {
 
   private static HtmlUnitDriver browser;
@@ -35,14 +32,14 @@ public class DesignAndOrderTacosBrowserTest {
   @Autowired
   TestRestTemplate rest;
 
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     browser = new HtmlUnitDriver();
     browser.manage().timeouts()
-        .implicitlyWait(10, TimeUnit.SECONDS);
+        .implicitlyWait(Duration.ofSeconds(10));
   }
 
-  @AfterClass
+  @AfterAll
   public static void closeBrowser() {
     browser.quit();
   }
@@ -101,10 +98,10 @@ public class DesignAndOrderTacosBrowserTest {
     assertDesignPageElements();
 
     for (String ingredient : ingredients) {
-      browser.findElementByCssSelector("input[value='" + ingredient + "']").click();
+      browser.findElement(By.cssSelector("input[value='" + ingredient + "']")).click();
     }
-    browser.findElementByCssSelector("input#name").sendKeys(name);
-    browser.findElementByCssSelector("form#tacoForm").submit();
+    browser.findElement(By.cssSelector("input#name")).sendKeys(name);
+    browser.findElement(By.cssSelector("form#tacoForm")).submit();
   }
 
   private void assertLandedOnLoginPage() {
@@ -112,29 +109,29 @@ public class DesignAndOrderTacosBrowserTest {
   }
 
   private void doRegistration(String username, String password) {
-    browser.findElementByLinkText("here").click();
+    browser.findElement(By.linkText("here")).click();
     assertEquals(registrationPageUrl(), browser.getCurrentUrl());
-    browser.findElementByName("username").sendKeys(username);
-    browser.findElementByName("password").sendKeys(password);
-    browser.findElementByName("confirm").sendKeys(password);
-    browser.findElementByName("fullname").sendKeys("Test McTest");
-    browser.findElementByName("street").sendKeys("1234 Test Street");
-    browser.findElementByName("city").sendKeys("Testville");
-    browser.findElementByName("state").sendKeys("TX");
-    browser.findElementByName("zip").sendKeys("12345");
-    browser.findElementByName("phone").sendKeys("123-123-1234");
-    browser.findElementByCssSelector("form#registerForm").submit();
+    browser.findElement(By.name("username")).sendKeys(username);
+    browser.findElement(By.name("password")).sendKeys(password);
+    browser.findElement(By.name("confirm")).sendKeys(password);
+    browser.findElement(By.name("fullname")).sendKeys("Test McTest");
+    browser.findElement(By.name("street")).sendKeys("1234 Test Street");
+    browser.findElement(By.name("city")).sendKeys("Testville");
+    browser.findElement(By.name("state")).sendKeys("TX");
+    browser.findElement(By.name("zip")).sendKeys("12345");
+    browser.findElement(By.name("phone")).sendKeys("123-123-1234");
+    browser.findElement(By.cssSelector("form#registerForm")).submit();
   }
 
 
   private void doLogin(String username, String password) {
-    browser.findElementByName("username").sendKeys(username);
-    browser.findElementByName("password").sendKeys(password);
-    browser.findElementByCssSelector("form#loginForm").submit();
+    browser.findElement(By.name("username")).sendKeys(username);
+    browser.findElement(By.name("password")).sendKeys(password);
+    browser.findElement(By.cssSelector("form#loginForm")).submit();
   }
 
   private void doLogout() {
-    WebElement logoutForm = browser.findElementByCssSelector("form#logoutForm");
+    WebElement logoutForm = browser.findElement(By.cssSelector("form#logoutForm"));
     if (logoutForm != null) {
       logoutForm.submit();
     }
@@ -142,35 +139,35 @@ public class DesignAndOrderTacosBrowserTest {
 
   private void assertDesignPageElements() {
     assertEquals(designPageUrl(), browser.getCurrentUrl());
-    List<WebElement> ingredientGroups = browser.findElementsByClassName("ingredient-group");
+    List<WebElement> ingredientGroups = browser.findElements(By.className("ingredient-group"));
     assertEquals(5, ingredientGroups.size());
 
-    WebElement wrapGroup = browser.findElementByCssSelector("div.ingredient-group#wraps");
+    WebElement wrapGroup = browser.findElement(By.cssSelector("div.ingredient-group#wraps"));
     List<WebElement> wraps = wrapGroup.findElements(By.tagName("div"));
     assertEquals(2, wraps.size());
     assertIngredient(wrapGroup, 0, "FLTO", "Flour Tortilla");
     assertIngredient(wrapGroup, 1, "COTO", "Corn Tortilla");
 
-    WebElement proteinGroup = browser.findElementByCssSelector("div.ingredient-group#proteins");
+    WebElement proteinGroup = browser.findElement(By.cssSelector("div.ingredient-group#proteins"));
     List<WebElement> proteins = proteinGroup.findElements(By.tagName("div"));
     assertEquals(2, proteins.size());
     assertIngredient(proteinGroup, 0, "GRBF", "Ground Beef");
     assertIngredient(proteinGroup, 1, "CARN", "Carnitas");
 
-    WebElement cheeseGroup = browser.findElementByCssSelector("div.ingredient-group#cheeses");
-    List<WebElement> cheeses = proteinGroup.findElements(By.tagName("div"));
+    WebElement cheeseGroup = browser.findElement(By.cssSelector("div.ingredient-group#cheeses"));
+    List<WebElement> cheeses = cheeseGroup.findElements(By.tagName("div"));
     assertEquals(2, cheeses.size());
     assertIngredient(cheeseGroup, 0, "CHED", "Cheddar");
     assertIngredient(cheeseGroup, 1, "JACK", "Monterrey Jack");
 
-    WebElement veggieGroup = browser.findElementByCssSelector("div.ingredient-group#veggies");
-    List<WebElement> veggies = proteinGroup.findElements(By.tagName("div"));
+    WebElement veggieGroup = browser.findElement(By.cssSelector("div.ingredient-group#veggies"));
+    List<WebElement> veggies = veggieGroup.findElements(By.tagName("div"));
     assertEquals(2, veggies.size());
     assertIngredient(veggieGroup, 0, "TMTO", "Diced Tomatoes");
     assertIngredient(veggieGroup, 1, "LETC", "Lettuce");
 
-    WebElement sauceGroup = browser.findElementByCssSelector("div.ingredient-group#sauces");
-    List<WebElement> sauces = proteinGroup.findElements(By.tagName("div"));
+    WebElement sauceGroup = browser.findElement(By.cssSelector("div.ingredient-group#sauces"));
+    List<WebElement> sauces = sauceGroup.findElements(By.tagName("div"));
     assertEquals(2, sauces.size());
     assertIngredient(sauceGroup, 0, "SLSA", "Salsa");
     assertIngredient(sauceGroup, 1, "SRCR", "Sour Cream");
@@ -187,7 +184,7 @@ public class DesignAndOrderTacosBrowserTest {
     fillField("input#ccNumber", "4111111111111111");
     fillField("input#ccExpiration", "10/19");
     fillField("input#ccCVV", "123");
-    browser.findElementByCssSelector("form#orderForm").submit();
+    browser.findElement(By.cssSelector("form#orderForm")).submit();
   }
 
   private void submitEmptyOrderForm() {
@@ -198,7 +195,7 @@ public class DesignAndOrderTacosBrowserTest {
     fillField("input#deliveryCity", "");
     fillField("input#deliveryState", "");
     fillField("input#deliveryZip", "");
-    browser.findElementByCssSelector("form#orderForm").submit();
+    browser.findElement(By.cssSelector("form#orderForm")).submit();
 
     assertEquals(orderDetailsPageUrl(), browser.getCurrentUrl());
 
@@ -216,7 +213,7 @@ public class DesignAndOrderTacosBrowserTest {
   }
 
   private List<String> getValidationErrorTexts() {
-    List<WebElement> validationErrorElements = browser.findElementsByClassName("validationError");
+    List<WebElement> validationErrorElements = browser.findElements(By.className("validationError"));
     List<String> validationErrors = validationErrorElements.stream()
         .map(el -> el.getText())
         .collect(Collectors.toList());
@@ -233,7 +230,7 @@ public class DesignAndOrderTacosBrowserTest {
     fillField("input#ccNumber", "1234432112344322");
     fillField("input#ccExpiration", "14/91");
     fillField("input#ccCVV", "1234");
-    browser.findElementByCssSelector("form#orderForm").submit();
+    browser.findElement(By.cssSelector("form#orderForm")).submit();
 
     assertEquals(orderDetailsPageUrl(), browser.getCurrentUrl());
 
@@ -246,7 +243,7 @@ public class DesignAndOrderTacosBrowserTest {
   }
 
   private void fillField(String fieldName, String value) {
-    WebElement field = browser.findElementByCssSelector(fieldName);
+    WebElement field = browser.findElement(By.cssSelector(fieldName));
     field.clear();
     field.sendKeys(value);
   }
@@ -263,12 +260,12 @@ public class DesignAndOrderTacosBrowserTest {
 
   private void clickDesignATaco() {
     assertEquals(homePageUrl(), browser.getCurrentUrl());
-    browser.findElementByCssSelector("a[id='design']").click();
+    browser.findElement(By.cssSelector("a[id='design']")).click();
   }
 
   private void clickBuildAnotherTaco() {
     assertTrue(browser.getCurrentUrl().startsWith(orderDetailsPageUrl()));
-    browser.findElementByCssSelector("a[id='another']").click();
+    browser.findElement(By.cssSelector("a[id='another']")).click();
   }
 
 

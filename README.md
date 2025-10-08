@@ -23,8 +23,6 @@ React UI.
 | `tacos`              | Aggregated Spring Boot application |
 | `tacocloud-ui-react` | Standalone Vite + React frontend (not part of Maven reactor) |
 
-Angular has been removed; the React app replaces it.
-
 ## Prerequisites
 
 - Java 17 (e.g. Temurin 17.0.12)
@@ -64,7 +62,7 @@ requests to the backend (configurable via `VITE_API_BASE_URL`).
   `AuthenticationManager`).
 - Modern Spring HATEOAS (`RepresentationModel`, `EntityModel`, lambda processors).
 - Lombok removed in favour of explicit Java accessors and constructors.
-- New React client replaces the Angular module to keep the UI lightweight.
+- New React client keeps the UI lightweight while consuming the REST API.
 
 See `REFACTOR.md` for the full migration log and `SECURITY_NOTES.md` for a deeper
 dive into the Spring Security pieces.
